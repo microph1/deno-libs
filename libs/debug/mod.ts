@@ -6,19 +6,15 @@
 
 const colors = new Map<string, string>();
 
-const colorPalette: string[] = [];
-
-
-colorPalette.push(
-  '#0000FF', '#6699FF', // Blue
-  '#FF0000', '#FF6666', // Red
-  '#00FF00', '#66FF66', // Green
-  '#FFFF00', '#FFFF66', // Yellow
-  '#800080', '#CC66CC', // Purple
-  '#FFA500', '#FFCC99', // Orange
-  '#FFC0CB', '#FFCCCC', // Pink
-  '#40E0D0', '#66CCCC'  // Turquoise
-);
+/**
+ * Generates a random hex color.
+ */
+function generateRandomColor(): string {
+  const r = Math.floor(Math.random() * 256);
+  const g = Math.floor(Math.random() * 256);
+  const b = Math.floor(Math.random() * 256);
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
 
 export type Log = (...args: unknown[]) => void;
 
@@ -39,10 +35,9 @@ export function debug(namespace: string): Log {
   const DEBUG = Deno.env.get('DEBUG');
 
 
-  const random = Math.floor(Math.random() * colorPalette.length);
   // Generate a random color
   const randomColor = colors.get(namespace) ||
-    colors.set(namespace, colorPalette[random]).get(namespace) as string;
+    colors.set(namespace, generateRandomColor()).get(namespace) as string;
 
 
   // CSS style for the namespace with random color and bold
