@@ -2,7 +2,6 @@ import { debug } from './mod.ts';
 
 Deno.test('debug function creation', () => {
   const log = debug('test');
-  // Test that it's a function
   if (typeof log !== 'function') {
     throw new Error('debug should return a function');
   }

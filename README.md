@@ -4,4 +4,4 @@ Microphi is a Deno monorepo containing all utilities for Deno that we created wh
 
 ## Packages
 
-- [@microphi/debug](libs/debug/) - A simple debug logging utility for Deno, inspired by the 'debug' package.
+- [@microphi/debug](libs/debug/) - A feature-rich debug logging utility for Deno with colored output, timestamps, regex namespace matching, and callback support, inspired by the 'debug' package.
