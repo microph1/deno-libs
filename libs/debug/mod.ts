@@ -7,14 +7,50 @@
 const colors = new Map<string, string>();
 
 /**
- * Generates a random hex color.
+ * Converts HSL to RGB.
  */
-function generateRandomColor(): string {
-  const r = Math.floor(Math.random() * 256);
-  const g = Math.floor(Math.random() * 256);
-  const b = Math.floor(Math.random() * 256);
+function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+  h /= 360;
+  s /= 100;
+  l /= 100;
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs((h * 6) % 2 - 1));
+  const m = l - c / 2;
+  let r = 0, g = 0, b = 0;
+  if (0 <= h && h < 1/6) { r = c; g = x; b = 0; }
+  else if (1/6 <= h && h < 2/6) { r = x; g = c; b = 0; }
+  else if (2/6 <= h && h < 3/6) { r = 0; g = c; b = x; }
+  else if (3/6 <= h && h < 4/6) { r = 0; g = x; b = c; }
+  else if (4/6 <= h && h < 5/6) { r = x; g = 0; b = c; }
+  else if (5/6 <= h && h < 1) { r = c; g = 0; b = x; }
+  return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
+}
+
+/**
+ * Converts RGB to hex.
+ */
+function rgbToHex(r: number, g: number, b: number): string {
   return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 }
+
+/**
+ * Generator for high-contrast colors.
+ */
+function* highContrastColorGenerator(): Generator<string> {
+  let lastHue = Math.random() * 360;
+  while (true) {
+    const minHueDiff = 120;
+    let newHue = (lastHue + minHueDiff + Math.random() * (360 - 2 * minHueDiff)) % 360;
+    lastHue = newHue;
+    const saturation = 70 + Math.random() * 30; // 70-100%
+    const lightness = 40 + Math.random() * 30;  // 40-70%
+    const [r, g, b] = hslToRgb(newHue, saturation, lightness);
+    yield rgbToHex(r, g, b);
+  }
+}
+
+// Singleton generator instance
+const colorGen = highContrastColorGenerator();
 
 export type Log = (...args: unknown[]) => void;
 
@@ -35,9 +71,9 @@ export function debug(namespace: string): Log {
   const DEBUG = Deno.env.get('DEBUG');
 
 
-  // Generate a random color
+  // Generate a high-contrast color
   const randomColor = colors.get(namespace) ||
-    colors.set(namespace, generateRandomColor()).get(namespace) as string;
+    colors.set(namespace, colorGen.next().value).get(namespace) as string;
 
 
   // CSS style for the namespace with random color and bold
